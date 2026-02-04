@@ -7,12 +7,12 @@ import { calculateAnchorIndex, extractPunctuation } from './anchorCalculator'
  */
 export async function parseEpub(file: File): Promise<Document> {
   const arrayBuffer = await file.arrayBuffer()
-  const book = ePub(arrayBuffer)
+  const book = ePub(arrayBuffer) as any
 
   await book.ready
 
   const metadata = await book.loaded.metadata
-  const title = metadata.title || file.name.replace(/\.epub$/i, '')
+  const title = metadata?.title || file.name.replace(/\.epub$/i, '')
   const chapters = await extractChapters(book)
 
   return {
@@ -24,12 +24,12 @@ export async function parseEpub(file: File): Promise<Document> {
 /**
  * Extract chapters from the EPUB spine.
  */
-async function extractChapters(book: ReturnType<typeof ePub>): Promise<Chapter[]> {
+async function extractChapters(book: any): Promise<Chapter[]> {
   const chapters: Chapter[] = []
-  const spine = book.spine as { each: (callback: (section: SpineItem) => void) => void }
+  const spine = book.spine
 
   const sections: SpineItem[] = []
-  spine.each((section) => sections.push(section))
+  spine.each((section: SpineItem) => sections.push(section))
 
   for (const section of sections) {
     try {

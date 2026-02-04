@@ -1,4 +1,4 @@
-import type { Document, Chapter, Paragraph, Sentence, Word } from '@/types'
+import type { Document, Paragraph, Sentence, Word } from '@/types'
 import { calculateAnchorIndex, extractPunctuation } from './anchorCalculator'
 
 /**
