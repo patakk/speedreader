@@ -127,32 +127,32 @@ const isOpen = ref(false)
       <div class="setting-group">
         <label class="setting-label">
           Comma Pause
-          <span class="setting-value">{{ Math.round((settings.commaPauseMultiplier - 1) * 100) }}%</span>
+          <span class="setting-value">{{ settings.commaPauseMs }}ms</span>
         </label>
         <input
           type="range"
           class="setting-slider"
-          min="1"
-          max="2"
-          step="0.1"
-          :value="settings.commaPauseMultiplier"
-          @input="emit('updateSetting', 'commaPauseMultiplier', Number(($event.target as HTMLInputElement).value))"
+          min="0"
+          max="500"
+          step="10"
+          :value="settings.commaPauseMs"
+          @input="emit('updateSetting', 'commaPauseMs', Number(($event.target as HTMLInputElement).value))"
         />
       </div>
 
       <div class="setting-group">
         <label class="setting-label">
           Period Pause
-          <span class="setting-value">{{ Math.round((settings.periodPauseMultiplier - 1) * 100) }}%</span>
+          <span class="setting-value">{{ settings.periodPauseMs }}ms</span>
         </label>
         <input
           type="range"
           class="setting-slider"
-          min="1"
-          max="3"
-          step="0.1"
-          :value="settings.periodPauseMultiplier"
-          @input="emit('updateSetting', 'periodPauseMultiplier', Number(($event.target as HTMLInputElement).value))"
+          min="0"
+          max="500"
+          step="10"
+          :value="settings.periodPauseMs"
+          @input="emit('updateSetting', 'periodPauseMs', Number(($event.target as HTMLInputElement).value))"
         />
       </div>
 

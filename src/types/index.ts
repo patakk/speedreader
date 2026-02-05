@@ -35,8 +35,8 @@ export interface Settings {
   fontSize: number
   theme: 'dark' | 'light'
   showFocalLine: boolean
-  commaPauseMultiplier: number
-  periodPauseMultiplier: number
+  commaPauseMs: number
+  periodPauseMs: number
   paragraphPauseMs: number
   chapterPauseMs: number
 }
@@ -66,8 +66,8 @@ export const DEFAULT_SETTINGS: Settings = {
   fontSize: 48,
   theme: 'dark',
   showFocalLine: false,
-  commaPauseMultiplier: 1.0,
-  periodPauseMultiplier: 1.7,
+  commaPauseMs: 0,
+  periodPauseMs: 150,
   paragraphPauseMs: 0,
   chapterPauseMs: 0,
 }
