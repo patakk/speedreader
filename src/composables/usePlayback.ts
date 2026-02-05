@@ -178,7 +178,7 @@ export function usePlayback(settings: { value: Settings }) {
     return { paragraphBreak: false, chapterBreak: false }
   }
 
-  // Playback loop
+  // Schedule next word (advances then waits)
   function scheduleNext() {
     if (!isPlaying.value || !document.value) return
 
@@ -187,7 +187,6 @@ export function usePlayback(settings: { value: Settings }) {
       return
     }
 
-    const delay = getWordDelay()
     const { paragraphBreak, chapterBreak } = advance()
 
     let extraDelay = 0
@@ -197,7 +196,21 @@ export function usePlayback(settings: { value: Settings }) {
       extraDelay = settings.value.paragraphPauseMs
     }
 
-    timeoutId = window.setTimeout(scheduleNext, delay + extraDelay)
+    const delay = getWordDelay() + extraDelay
+    timeoutId = window.setTimeout(scheduleNext, delay)
+  }
+
+  // Just reschedule current word with new timing (no advance)
+  function reschedule() {
+    if (!isPlaying.value || !document.value) return
+
+    if (isAtEnd()) {
+      isPlaying.value = false
+      return
+    }
+
+    const delay = getWordDelay()
+    timeoutId = window.setTimeout(scheduleNext, delay)
   }
 
   // Control functions
@@ -341,11 +354,11 @@ export function usePlayback(settings: { value: Settings }) {
     () => settings.value.wpm,
     () => {
       if (isPlaying.value) {
-        // Restart the timer with new WPM
+        // Restart the timer with new WPM (don't advance)
         if (timeoutId) {
           clearTimeout(timeoutId)
         }
-        scheduleNext()
+        reschedule()
       }
     }
   )
