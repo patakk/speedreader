@@ -1,38 +1,48 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import type { Settings } from '@/types'
 
 defineProps<{
   isPlaying: boolean
   settings: Settings
+  currentWordIndex: number
+  totalWords: number
 }>()
 
 const emit = defineEmits<{
   togglePlay: []
   restart: []
-  jumpSentences: [count: number]
-  jumpParagraphs: [count: number]
+  jumpWords: [count: number]
+  jumpToWord: [index: number]
   updateWpm: [wpm: number]
 }>()
+
+const showJumpInput = ref(false)
+const jumpInputValue = ref('')
+
+function handleJumpSubmit() {
+  const index = parseInt(jumpInputValue.value, 10)
+  if (!isNaN(index) && index >= 0) {
+    emit('jumpToWord', index)
+  }
+  showJumpInput.value = false
+  jumpInputValue.value = ''
+}
+
+function openJumpInput(currentIndex: number) {
+  jumpInputValue.value = String(currentIndex)
+  showJumpInput.value = true
+}
 </script>
 
 <template>
   <div class="controls">
     <div class="controls-row">
-      <!-- Navigation buttons -->
+      <!-- Previous word -->
       <button
         class="control-btn"
-        @click="emit('jumpParagraphs', -1)"
-        title="Previous paragraph (Shift+Left)"
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5" />
-        </svg>
-      </button>
-
-      <button
-        class="control-btn"
-        @click="emit('jumpSentences', -1)"
-        title="Previous sentence (Left)"
+        @click="emit('jumpWords', -1)"
+        title="Previous word (Left)"
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M15 18l-6-6 6-6" />
@@ -54,23 +64,14 @@ const emit = defineEmits<{
         </svg>
       </button>
 
+      <!-- Next word -->
       <button
         class="control-btn"
-        @click="emit('jumpSentences', 1)"
-        title="Next sentence (Right)"
+        @click="emit('jumpWords', 1)"
+        title="Next word (Right)"
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M9 18l6-6-6-6" />
-        </svg>
-      </button>
-
-      <button
-        class="control-btn"
-        @click="emit('jumpParagraphs', 1)"
-        title="Next paragraph (Shift+Right)"
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M6 17l5-5-5-5M13 17l5-5-5-5" />
         </svg>
       </button>
 
@@ -81,6 +82,32 @@ const emit = defineEmits<{
           <path d="M3 3v5h5" />
         </svg>
       </button>
+    </div>
+
+    <!-- Word position (clickable to jump) -->
+    <div class="position-control">
+      <button
+        v-if="!showJumpInput"
+        class="position-btn"
+        @click="openJumpInput(currentWordIndex)"
+        title="Click to jump to word"
+      >
+        {{ currentWordIndex }} / {{ totalWords }}
+      </button>
+      <form v-else class="jump-form" @submit.prevent="handleJumpSubmit">
+        <input
+          v-model="jumpInputValue"
+          type="number"
+          min="0"
+          :max="totalWords - 1"
+          class="jump-input"
+          placeholder="Word #"
+          autofocus
+          @blur="showJumpInput = false"
+          @keydown.esc="showJumpInput = false"
+        />
+        <span class="jump-total">/ {{ totalWords }}</span>
+      </form>
     </div>
 
     <!-- WPM slider -->
@@ -157,6 +184,64 @@ const emit = defineEmits<{
 .control-btn-primary svg {
   width: 24px;
   height: 24px;
+}
+
+.position-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.position-btn {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.position-btn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.jump-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.jump-input {
+  width: 70px;
+  padding: 0.25rem 0.35rem;
+  border: 1px solid var(--color-accent);
+  border-radius: 4px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  -moz-appearance: textfield;
+}
+
+.jump-input::-webkit-outer-spin-button,
+.jump-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.jump-input:focus {
+  outline: none;
+}
+
+.jump-total {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .wpm-control {

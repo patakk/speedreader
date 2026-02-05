@@ -42,19 +42,11 @@ function handleKeydown(event: KeyboardEvent) {
       break
     case 'ArrowLeft':
       event.preventDefault()
-      if (event.shiftKey) {
-        playback.jumpParagraphs(-1)
-      } else {
-        playback.jumpSentences(-1)
-      }
+      playback.jumpWords(-1)
       break
     case 'ArrowRight':
       event.preventDefault()
-      if (event.shiftKey) {
-        playback.jumpParagraphs(1)
-      } else {
-        playback.jumpSentences(1)
-      }
+      playback.jumpWords(1)
       break
     case 'ArrowUp':
       event.preventDefault()
@@ -134,10 +126,12 @@ onUnmounted(() => {
       <Controls
         :is-playing="playback.isPlaying.value"
         :settings="currentSettings"
+        :current-word-index="playback.currentWordIndex.value"
+        :total-words="playback.totalWords.value"
         @toggle-play="playback.togglePlayPause"
         @restart="playback.restart"
-        @jump-sentences="playback.jumpSentences"
-        @jump-paragraphs="playback.jumpParagraphs"
+        @jump-words="playback.jumpWords"
+        @jump-to-word="playback.jumpToWord"
         @update-wpm="(wpm) => updateSetting('wpm', wpm)"
       />
     </footer>
@@ -162,12 +156,17 @@ onUnmounted(() => {
 }
 
 .header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 2rem;
   padding: 1rem;
   flex-wrap: wrap;
+  z-index: 10;
 }
 
 .title {

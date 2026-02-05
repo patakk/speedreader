@@ -246,91 +246,80 @@ export function usePlayback(settings: { value: Settings }) {
     }
   }
 
-  // Jump forward/backward by sentences
-  function jumpSentences(count: number) {
+  // Jump forward/backward by words
+  function jumpWords(count: number) {
     if (!document.value) return
     pause()
 
     for (let i = 0; i < Math.abs(count); i++) {
       if (count > 0) {
         // Forward
+        if (!isAtEnd()) {
+          advance()
+        }
+      } else {
+        // Backward
         const chapter = document.value.chapters[position.value.chapterIndex]
         if (!chapter) break
 
         const para = chapter.paragraphs[position.value.paragraphIndex]
         if (!para) break
 
-        if (position.value.sentenceIndex < para.sentences.length - 1) {
-          position.value.sentenceIndex++
-          position.value.wordIndex = 0
-        } else if (position.value.paragraphIndex < chapter.paragraphs.length - 1) {
-          position.value.paragraphIndex++
-          position.value.sentenceIndex = 0
-          position.value.wordIndex = 0
-        } else if (position.value.chapterIndex < document.value.chapters.length - 1) {
-          position.value.chapterIndex++
-          position.value.paragraphIndex = 0
-          position.value.sentenceIndex = 0
-          position.value.wordIndex = 0
-        }
-      } else {
-        // Backward
+        const sentence = para.sentences[position.value.sentenceIndex]
+        if (!sentence) break
+
         if (position.value.wordIndex > 0) {
-          position.value.wordIndex = 0
+          position.value.wordIndex--
         } else if (position.value.sentenceIndex > 0) {
           position.value.sentenceIndex--
-          position.value.wordIndex = 0
+          const prevSentence = para.sentences[position.value.sentenceIndex]
+          position.value.wordIndex = prevSentence.words.length - 1
         } else if (position.value.paragraphIndex > 0) {
           position.value.paragraphIndex--
-          const chapter = document.value.chapters[position.value.chapterIndex]
-          const para = chapter.paragraphs[position.value.paragraphIndex]
-          position.value.sentenceIndex = para.sentences.length - 1
-          position.value.wordIndex = 0
+          const prevPara = chapter.paragraphs[position.value.paragraphIndex]
+          position.value.sentenceIndex = prevPara.sentences.length - 1
+          const prevSentence = prevPara.sentences[position.value.sentenceIndex]
+          position.value.wordIndex = prevSentence.words.length - 1
         } else if (position.value.chapterIndex > 0) {
           position.value.chapterIndex--
-          const chapter = document.value.chapters[position.value.chapterIndex]
-          position.value.paragraphIndex = chapter.paragraphs.length - 1
-          const para = chapter.paragraphs[position.value.paragraphIndex]
-          position.value.sentenceIndex = para.sentences.length - 1
-          position.value.wordIndex = 0
+          const prevChapter = document.value.chapters[position.value.chapterIndex]
+          position.value.paragraphIndex = prevChapter.paragraphs.length - 1
+          const prevPara = prevChapter.paragraphs[position.value.paragraphIndex]
+          position.value.sentenceIndex = prevPara.sentences.length - 1
+          const prevSentence = prevPara.sentences[position.value.sentenceIndex]
+          position.value.wordIndex = prevSentence.words.length - 1
         }
       }
     }
   }
 
-  // Jump forward/backward by paragraphs
-  function jumpParagraphs(count: number) {
+  // Jump to a specific word index
+  function jumpToWord(targetIndex: number) {
     if (!document.value) return
     pause()
 
-    for (let i = 0; i < Math.abs(count); i++) {
-      if (count > 0) {
-        // Forward
-        const chapter = document.value.chapters[position.value.chapterIndex]
-        if (!chapter) break
+    if (targetIndex < 0) targetIndex = 0
+    if (targetIndex >= totalWords.value) targetIndex = totalWords.value - 1
 
-        if (position.value.paragraphIndex < chapter.paragraphs.length - 1) {
-          position.value.paragraphIndex++
-          position.value.sentenceIndex = 0
-          position.value.wordIndex = 0
-        } else if (position.value.chapterIndex < document.value.chapters.length - 1) {
-          position.value.chapterIndex++
-          position.value.paragraphIndex = 0
-          position.value.sentenceIndex = 0
-          position.value.wordIndex = 0
-        }
-      } else {
-        // Backward
-        if (position.value.paragraphIndex > 0) {
-          position.value.paragraphIndex--
-          position.value.sentenceIndex = 0
-          position.value.wordIndex = 0
-        } else if (position.value.chapterIndex > 0) {
-          position.value.chapterIndex--
-          const chapter = document.value.chapters[position.value.chapterIndex]
-          position.value.paragraphIndex = chapter.paragraphs.length - 1
-          position.value.sentenceIndex = 0
-          position.value.wordIndex = 0
+    let count = 0
+    for (let c = 0; c < document.value.chapters.length; c++) {
+      const chapter = document.value.chapters[c]
+      for (let p = 0; p < chapter.paragraphs.length; p++) {
+        const para = chapter.paragraphs[p]
+        for (let s = 0; s < para.sentences.length; s++) {
+          const sentence = para.sentences[s]
+          for (let w = 0; w < sentence.words.length; w++) {
+            if (count === targetIndex) {
+              position.value = {
+                chapterIndex: c,
+                paragraphIndex: p,
+                sentenceIndex: s,
+                wordIndex: w,
+              }
+              return
+            }
+            count++
+          }
         }
       }
     }
@@ -375,8 +364,8 @@ export function usePlayback(settings: { value: Settings }) {
     togglePlayPause,
     restart,
     jumpToChapter,
-    jumpSentences,
-    jumpParagraphs,
+    jumpWords,
+    jumpToWord,
     setDocument,
   }
 }
