@@ -98,13 +98,8 @@ export function usePlayback(settings: { value: Settings }) {
     if (!word) return baseDelay
 
     // Check for punctuation-based pauses (add ms)
-    if (word.punctuation) {
-      if (word.punctuation.includes(',')) {
-        return baseDelay + settings.value.commaPauseMs
-      }
-      if (/[.!?;:]/.test(word.punctuation)) {
-        return baseDelay + settings.value.periodPauseMs
-      }
+    if (word.punctuation && /[.!?;:]/.test(word.punctuation)) {
+      return baseDelay + settings.value.periodPauseMs
     }
 
     return baseDelay

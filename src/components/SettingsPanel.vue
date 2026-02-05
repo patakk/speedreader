@@ -126,22 +126,6 @@ const isOpen = ref(false)
       <!-- Pause Settings -->
       <div class="setting-group">
         <label class="setting-label">
-          Comma Pause
-          <span class="setting-value">{{ settings.commaPauseMs }}ms</span>
-        </label>
-        <input
-          type="range"
-          class="setting-slider"
-          min="0"
-          max="500"
-          step="10"
-          :value="settings.commaPauseMs"
-          @input="emit('updateSetting', 'commaPauseMs', Number(($event.target as HTMLInputElement).value))"
-        />
-      </div>
-
-      <div class="setting-group">
-        <label class="setting-label">
           Period Pause
           <span class="setting-value">{{ settings.periodPauseMs }}ms</span>
         </label>
