@@ -15,6 +15,9 @@ const isOpen = ref(false)
 
 <template>
   <div class="settings-panel" :class="{ open: isOpen }">
+    <!-- Backdrop to close on outside click -->
+    <div v-if="isOpen" class="settings-backdrop" @click="isOpen = false"></div>
+
     <button class="settings-toggle" @click="isOpen = !isOpen" title="Settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="12" cy="12" r="3" />
@@ -194,6 +197,12 @@ const isOpen = ref(false)
   top: 1rem;
   right: 1rem;
   z-index: 100;
+}
+
+.settings-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
 }
 
 .settings-toggle {

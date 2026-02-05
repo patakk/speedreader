@@ -66,8 +66,8 @@ export const DEFAULT_SETTINGS: Settings = {
   fontSize: 48,
   theme: 'dark',
   showFocalLine: false,
-  commaPauseMultiplier: 1.4,
-  periodPauseMultiplier: 2.0,
-  paragraphPauseMs: 300,
-  chapterPauseMs: 1000,
+  commaPauseMultiplier: 1.0,
+  periodPauseMultiplier: 1.7,
+  paragraphPauseMs: 0,
+  chapterPauseMs: 0,
 }

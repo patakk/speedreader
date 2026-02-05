@@ -185,12 +185,16 @@ onUnmounted(() => {
 }
 
 .main {
-  flex: 1;
+  position: fixed;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2rem;
   padding-bottom: 180px; /* Space for controls and progress */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .footer {
