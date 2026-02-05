@@ -16,6 +16,12 @@ const textTitle = ref('')
 const activeTab = ref<'epub' | 'text'>('epub')
 const isDragging = ref(false)
 
+function open() {
+  isOpen.value = true
+}
+
+defineExpose({ open })
+
 async function handleFileSelect(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]

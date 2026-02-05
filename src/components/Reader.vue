@@ -7,6 +7,10 @@ const props = defineProps<{
   settings: Settings
 }>()
 
+const emit = defineEmits<{
+  loadRequest: []
+}>()
+
 const beforeRef = ref<HTMLElement | null>(null)
 const anchorRef = ref<HTMLElement | null>(null)
 const offset = ref(0)
@@ -70,9 +74,9 @@ watch(
     </div>
 
     <!-- Empty state -->
-    <div v-else class="empty-state">
+    <button v-else class="empty-state" @click="emit('loadRequest')">
       <span class="empty-text">Load a document to start reading</span>
-    </div>
+    </button>
   </div>
 </template>
 
@@ -131,10 +135,24 @@ watch(
   display: flex;
   align-items: center;
   justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.empty-state:hover {
+  background: var(--color-surface);
 }
 
 .empty-text {
   color: var(--color-text-muted);
   font-size: 1rem;
+}
+
+.empty-state:hover .empty-text {
+  color: var(--color-text);
 }
 </style>

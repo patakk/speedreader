@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, watch, computed } from 'vue'
+import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import Reader from '@/components/Reader.vue'
 import Controls from '@/components/Controls.vue'
 import SettingsPanel from '@/components/SettingsPanel.vue'
@@ -15,6 +15,13 @@ const playback = usePlayback(settings)
 
 // Ensure settings is always available for templates
 const currentSettings = computed(() => settings.value)
+
+// Ref to FileUpload component
+const fileUploadRef = ref<InstanceType<typeof FileUpload> | null>(null)
+
+function openFileUpload() {
+  fileUploadRef.value?.open()
+}
 
 // Title display
 const documentTitle = computed(() => playback.document.value?.title || 'EPUB Speed Reader')
@@ -107,7 +114,7 @@ onUnmounted(() => {
     </header>
 
     <!-- File upload button -->
-    <FileUpload @document-loaded="handleDocumentLoaded" />
+    <FileUpload ref="fileUploadRef" @document-loaded="handleDocumentLoaded" />
 
     <!-- Settings panel -->
     <SettingsPanel
@@ -118,7 +125,7 @@ onUnmounted(() => {
 
     <!-- Main reading area -->
     <main class="main">
-      <Reader v-if="currentSettings" :word="playback.currentWord.value" :settings="currentSettings" />
+      <Reader v-if="currentSettings" :word="playback.currentWord.value" :settings="currentSettings" @load-request="openFileUpload" />
     </main>
 
     <!-- Controls (shown when paused or has document) -->
