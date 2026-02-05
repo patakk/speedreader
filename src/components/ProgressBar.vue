@@ -12,7 +12,7 @@ defineProps<{
       <div class="progress-fill" :style="{ width: `${progress}%` }"></div>
     </div>
     <div class="progress-info">
-      <span class="progress-count">{{ currentWord }} / {{ totalWords }}</span>
+      <span class="progress-count">{{ currentWord + 1 }} / {{ totalWords }}</span>
       <span class="progress-percent">{{ Math.round(progress) }}%</span>
     </div>
   </div>

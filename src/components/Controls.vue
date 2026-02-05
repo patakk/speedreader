@@ -21,9 +21,9 @@ const showJumpInput = ref(false)
 const jumpInputValue = ref('')
 
 function handleJumpSubmit() {
-  const index = parseInt(jumpInputValue.value, 10)
-  if (!isNaN(index) && index >= 0) {
-    emit('jumpToWord', index)
+  const displayIndex = parseInt(jumpInputValue.value, 10)
+  if (!isNaN(displayIndex) && displayIndex >= 1) {
+    emit('jumpToWord', displayIndex - 1) // Convert to 0-based
   }
   showJumpInput.value = false
   jumpInputValue.value = ''
@@ -89,17 +89,17 @@ function openJumpInput(currentIndex: number) {
       <button
         v-if="!showJumpInput"
         class="position-btn"
-        @click="openJumpInput(currentWordIndex)"
+        @click="openJumpInput(currentWordIndex + 1)"
         title="Click to jump to word"
       >
-        {{ currentWordIndex }} / {{ totalWords }}
+        {{ currentWordIndex + 1 }} / {{ totalWords }}
       </button>
       <form v-else class="jump-form" @submit.prevent="handleJumpSubmit">
         <input
           v-model="jumpInputValue"
           type="number"
-          min="0"
-          :max="totalWords - 1"
+          min="1"
+          :max="totalWords"
           class="jump-input"
           placeholder="Word #"
           autofocus

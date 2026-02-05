@@ -84,10 +84,10 @@ export function usePlayback(settings: { value: Settings }) {
     return count
   })
 
-  // Progress percentage
+  // Progress percentage (1-based, so last word = 100%)
   const progress = computed(() => {
     if (totalWords.value === 0) return 0
-    return (currentWordIndex.value / totalWords.value) * 100
+    return ((currentWordIndex.value + 1) / totalWords.value) * 100
   })
 
   // Calculate delay for current word

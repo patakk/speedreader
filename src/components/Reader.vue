@@ -89,6 +89,7 @@ watch(
   min-height: 300px;
   height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 
 .focal-line {
